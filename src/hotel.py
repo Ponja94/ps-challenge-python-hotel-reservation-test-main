@@ -10,6 +10,8 @@
 #data_enter = 'Rewards: 26Mar2009(thur), 27Mar2009(fri), 28Mar2009(sat)'
 #data_enter = 'Regular: 29Mar2009(sun)'
 #data_enter = 'Regular: 16Mar2009(mon), 17Mar2009(tues)'
+#data_enter = 'Reward: 16Mar2009(sun), 17Mar2009(tues)'
+
 data_enter = 'Rewards: 26Mar2009(thur), 27Mar2009(fri), 28Mar2009(sat), 29Mar2009(sun), 30Mar2009(mon)'
 #data_enter_format = 'client: data1, data2, data3, ...' 
 
@@ -33,13 +35,18 @@ hotel_ridgewood = Hotel('Ridgewood','5','220','100','150','40')
 
 
 
-# classe para verificar quantos dias de semana ou de final de semana
-class CheckIn:
+
+class Client():
     def __init__(self, data_received):
         self.data_received = data_received
         self.counter_weekend = 0
         self.counter_weekday = 0
+        self.cost_weekday = 0
+        self.cost_weekend = 0
         self.client_type = ''
+        self.lakewood_cost = 0
+        self.bridgewood_cost = 0
+        self.ridgewood_cost = 0
     
     #função separa string em info
     def counting_days(self):
@@ -52,38 +59,51 @@ class CheckIn:
         for i in range(len(days_to_check_in)):
             if days_to_check_in[i].find('sat') != -1 or days_to_check_in[i].find('sun') != -1:
                 self.counter_weekend+=1
-            
             else:
                 self.counter_weekday+=1
-        print(f"tipo: {self.client_type}, dia de semana {self.counter_weekday}, final de semana {self.counter_weekend}")
-
-#class client
-class Client():
-    def __init__(self):
-        self.days_to_check_in = None
-
-    def client_info(self):
-                
 
 
-        print("vim")
-        #self.counter_weekday = counter_weekday
-        #self.counter_weekend = counter_weekend
-        #print(f'{client_type},{counter_weekday},{counter_weekend}')
-    #def client_info(self, client_type, counter_weekday, counter_weekend):
-        pass
+    def client_cost(self):
+        if self.client_type == 'Regular':
+            lakewood_weekday = int(hotel_lakewood.tax_regular_weekday) * self.counter_weekday
+            lakewood_weekend = int(hotel_lakewood.tax_regular_weekend) * self.counter_weekend
+            self.lakewood_cost = lakewood_weekday+lakewood_weekend
+            
+            bridgewood_weekday = int(hotel_bridgewood.tax_regular_weekday) * self.counter_weekday
+            bridgewood_weekend = int(hotel_bridgewood.tax_regular_weekend) * self.counter_weekend
+            self.bridgewood_cost = bridgewood_weekday+bridgewood_weekend
+            
+            ridgewood_weekday = int(hotel_ridgewood.tax_regular_weekday) * self.counter_weekday
+            ridgewood_weekend = int(hotel_ridgewood.tax_regular_weekend) * self.counter_weekend
+            self.ridgewood_cost = ridgewood_weekday+ridgewood_weekend
+            
+        else:
+            lakewood_weekday = int(hotel_lakewood.tax_reward_weekday) * self.counter_weekday
+            lakewood_weekend = int(hotel_lakewood.tax_reward_weekend) * self.counter_weekend
+            self.lakewood_cost = lakewood_weekday+lakewood_weekend
+            
+            bridgewood_weekday = int(hotel_bridgewood.tax_reward_weekday) * self.counter_weekday
+            bridgewood_weekend = int(hotel_bridgewood.tax_reward_weekend) * self.counter_weekend
+            self.bridgewood_cost = bridgewood_weekday+bridgewood_weekend
+            
+            ridgewood_weekday = int(hotel_ridgewood.tax_reward_weekday) * self.counter_weekday
+            ridgewood_weekend = int(hotel_ridgewood.tax_reward_weekend) * self.counter_weekend
+            self.ridgewood_cost = ridgewood_weekday+ridgewood_weekend
+
+        print(f'lakewood: {self.lakewood_cost} bridgewood: {self.bridgewood_cost} ridgewood: {self.ridgewood_cost}')
+
+    def get_cheapest_hotel(self):
+        cheapest = {'Lakewood': self.lakewood_cost, 'Bridgewood': self.bridgewood_cost, 'Ridgewood': self.ridgewood_cost}
+        cheapest_hotel = min(cheapest, key=cheapest.get)
+        print(cheapest_hotel)
+        
 
 
 #código rodando
 #instanciando
-days_checked = CheckIn(data_enter)
-client = Client()
-#associando
-client.days_in = days_checked
-days_checked.user_info = client
 
-#verifica quantos dias é de semana ou fds
-client.days_in.counting_days()
+client = Client(data_enter)
+client.counting_days()
 
-days_checked.user_info.client_info()
-
+client.client_cost()
+client.get_cheapest_hotel()
